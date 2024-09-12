@@ -1,6 +1,11 @@
-# 获取文件
+## 阿里云
 
-## **一、使用MultipartFile实现**
+> - 核心配置信息
+>   - 服务器地址：endpoint
+>   - 身份标识：accessKeyID + accessKey Secret
+>   - BucketName
+
+## **使用MultipartFile实现**
 
 ```java
 //1、配置基础信息
@@ -40,7 +45,7 @@
     }
 ```
 
-## 二、使用工具类注入
+## 使用工具类注入
 
 ### 1、工具类
 
