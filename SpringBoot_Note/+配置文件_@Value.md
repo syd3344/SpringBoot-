@@ -2,6 +2,8 @@
 
 > - `@Value` 注解是 Spring 中用于将配置文件中的值注入到 Java 类中的常用方式。它适用于多种配置文件类型
 
+
+
 ## Properties
 
 **application.properties**
@@ -80,8 +82,6 @@ public class CustomConfig {
 }
 
 ```
-
-
 
 
 

@@ -36,6 +36,10 @@
 > - **生成响应对象**：
 >   - Controller 方法处理完请求后，会返回一个响应结果。
 >   - 这个结果可能是一个视图（如 Thymeleaf 模板）或者一个 JSON 对象等。
+>   - @ResponseBody
+>     - 将当前处理器的所有的返回结果直接封装到响应数据包的响应体中（一般在类上使用）
+>     - 如果返回值类型是 实体对象/集合，自动调用Jackson将实体转成Json格式返回
+>     - 不加@ResponseBody，返回的是一个页面，会到资源文件夹去查找此页面
 >   - `DispatcherServlet` 会将该结果封装为一个 `HttpServletResponse` 对象。
 > - **设置响应信息**：
 >   - `HttpServletResponse` 对象包含了返回给客户端的响应状态码、Header 信息以及响应体数据。

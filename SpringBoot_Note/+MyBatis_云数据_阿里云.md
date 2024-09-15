@@ -5,6 +5,8 @@
 >   - 身份标识：accessKeyID + accessKey Secret
 >   - BucketName
 
+
+
 ## **使用MultipartFile实现**
 
 ```java
@@ -44,6 +46,8 @@
         return Result.success("https://"+ bucketName+"."+ endpoint+"/"+ newFileName);
     }
 ```
+
+
 
 ## 使用工具类注入
 
@@ -96,6 +100,8 @@ public class ALiOssUtils {
 }
 
 ```
+
+
 
 ### 2、注入使用
 
