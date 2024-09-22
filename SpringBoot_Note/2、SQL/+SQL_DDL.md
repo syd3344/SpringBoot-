@@ -57,6 +57,10 @@
 > - 查询指定表的建表语句
 >   - show create table + 表名;
 
+### 在ideal中查看表的DDL语句
+
+![1727021742960](+SQL_DDL.assets/1727021742960.png)
+
 ### 创建
 
 ```mysql
