@@ -84,13 +84,19 @@ public interface Usermapper extends BaseMapper<User> {
 
 
 
-###  配置日志
+##  配置日志
+
+
+
+![1727102945540](mybatisPlus.assets/1727102945540.png)
+
+### yml配置
 
 ```
 #控制台日志
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.log4j2.Log4j2AbstractLoggerImpl
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 ```
 
 ## CRUD
@@ -177,19 +183,136 @@ mybatis-plus:
 >     - 确保 `MyMetaObjectHandler` 类被 Spring 管理
 >       - 通过 `@Component` 或 `@Bean` 注解来实现。
 
-### 乐观锁
-
-> - 
-
 ### select
 
+> -   单个ID
+> - usermapper.selectById(1);
+
+> - 批量ID
+> - usermapper.selectBatchIds(Arrays.asList(1,2,3));
+
+> - 条件查询
+> -  usermapper.selectByMap(map);
+
+![1726820443156](mybatisPlus.assets/1726820443156.png)
+
+```
+ Map map = new HashMap();
+        map.put("id", 7);
+        map.put("password", "88888");
+        List list = usermapper.selectByMap(map);
+```
+
+
+
+#### 分页查询及拦截器
+
+> - 拦截器
+
+```java
+ /*mybatis-plus分页拦截器*/
+    /*拦截一个,拼接一个*/
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor(){
+        MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
+        mybatisPlusInterceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        return mybatisPlusInterceptor;
+    }
+```
+
+> - 分页
+
+> -  Page<User> page = new Page<>(pageNum, pageSize);
+>   - 参数一：当前页
+>   - 参数二：页面大小
+> - sermapper.selectPage(page, wapper);
+>   - wapper：条件构造器
+> - 所有的数据又封装进page
+
+![1726822879297](mybatisPlus.assets/1726822879297.png)
+
+```java
+ void selectPage() {
+        int pageNum = 1;/*第一页*/
+        int pageSize = 2;/*每页数量*/
+        Page<User> page = new Page<>(pageNum, pageSize);
+        usermapper.selectPage(page, null);
+        long pages = page.getPages();
+        long total = page.getTotal();
+        List<User> records = page.getRecords();
+
+        System.out.println(pages);/*页数*/
+        System.out.println(total);/*总数*/
+        System.out.println(records);/*返回数据*/
+
+    }
+```
+
+
+
 ### delete
+
+> - 批量删除
+> - ID删除
+> - map删除
+
+### 逻辑删除
+
+> **概念**
+>
+> - 物理删除
+>   - 从数据库中直接移除
+> - 逻辑删除
+>   - 在数据库中没有删除，通过一个变量让他失效
+>   - deleted = 0 => deleted = 1;
+>   - 管理员可以查看被删除的记录，防止数据丢失，类似于回收站！
+>
+> **实现**
+>
+> - 在数据表中增加一个deleted字段
+>
+> - 在字段上加上注解 @TableLogic
+>
+> - ![1727096242398](mybatisPlus.assets/1727096242398.png)
+>
+> -  配置逻辑删除
+>
+> - ```yml
+> #所有的实体类
+> mybatis-plus:
+> global-config:
+> db-config:
+>   #:前缀
+>   table-prefix: tb_
+>   #:主键自增
+>   id-type: auto
+>   #控制台日志
+>   #配置逻辑删除
+>   logic-delete-value: 1
+>   logic-not-delete-value: 0
+>   ```
+>
+> 
+>
+> 
+>
+> - 本质走的是更新操作，并不是删除
+> - ![1727096848359](mybatisPlus.assets/1727096848359.png)
+> ```
+> 
+> ```
+
+
+
+
+
+
 
 ## 常用注解
 
 ### @TableName("tb_user")
 
-
+![1726819876263](mybatisPlus.assets/1726819876263.png)
 
 ###　@TableId（type = IdType.NONE）
 
@@ -244,57 +367,179 @@ public enum IdType {
    	 private String userName;
 ```
 
-## 全局配置
-
-> - #全局配置
->   #所有的实体类
->   mybatis-plus:
->     global-config:
->       db-config:
->         #:前缀
->         table-prefix: tb_
->         #
->         id-type: auto
 
 
+### @Version
+
+#### 乐观/悲观锁
+
+> - 乐观锁是一种并发控制机制，用于确保在更新记录时，该记录未被其他事务修改。
+> - 乐观：总认为不会出现问题，无论干什么都不去上锁，如果出现问题在测试加锁
+> - 悲观：认为总会出现问题，无论干什么都会上锁
+
+#### 实现
+
+> - 给数据库中增加Version字段
+> - 给实体类增加对应的字段
+> - ![1727080103366](mybatisPlus.assets/1727080103366.png)
+> -  注册组件
+> - ![1727080077653](mybatisPlus.assets/1727080077653.png)
+> - ![1727081632054](mybatisPlus.assets/1727081632054.png)
+
+
+
+## 性能分析插件
+
+> - 
 
 
 
 ## 条件构造器 -- Wrapper
 
-
-
-## 分页及拦截器
-
-
-
-## 自定义
-
-> - `BaseMapper` 接口提供了基本的 CRUD 方法，但你仍然可以在自定义复杂查询时，手动写 `Mapper` 方法，保持与数据库的清晰交互。
-
-
-
-![1726819876263](mybatisPlus.assets/1726819876263.png)
-
-![1726819866032](mybatisPlus.assets/1726819866032.png)
-
-
-
-![1726820398695](mybatisPlus.assets/1726820398695.png)
-
-![1726820443156](mybatisPlus.assets/1726820443156.png)
-
-![1726822871968](mybatisPlus.assets/1726822871968.png)
-
-![1726822879297](mybatisPlus.assets/1726822879297.png)
-
 ![1726824718705](mybatisPlus.assets/1726824718705.png)
 
-![1726827272512](mybatisPlus.assets/1726827272512.png)
+### 概述
+
+> - Wrapper是个接口和map类似
+>   - UpdateWrapper
+>   - QueryWrapper
+>     - QueryWrapper<User> wrapper = new QueryWrapper<>();
+>     - select *from tb_user where id = 2;
+>     - delete from tb_user where id = 2;
+>     - 查询语句完全一致，故没必要新建一个DeleteWrapper()
+>   - LambdaUpdateWrapper
+> -  和map类似，最好加个范型（对哪张表操作）
+
+### UpdateWrapper
 
 
 
+### QueryWrapper
 
+```java
+QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("name", "dengdeng")
+                    /*.or()*/
+                .ge("age", 18);
+```
+
+
+
+```java
+QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper
+                .like("name", "李")/*全模糊*/
+                .notLike("name", "李")/*不包含*/
+                .likeLeft("name", "李")/*左模糊*/
+                .likeRight("name", "李")/*右模糊*/
+
+                /*.or()*/
+                .ge("age", 18);
+```
+
+
+
+### LambdaUpdateWrapper
+
+```java
+LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.eq(User::getId,1)
+                .set(User::getPassword,8888);
+```
+
+
+
+> - 好处
+>   - 不再是和字段名强绑定，而是和实体类属性绑定
+>   - 数据库若换名字，则没关系
+
+
+
+### 子查询
+
+> - 
+
+
+
+## 封装service
+
+![1727262848755](mybatisPlus.assets/1727262848755.png)
+
+> - 实体类    ----    User
+> - Mapper接口    ----    继承BaseMapper<User>接口    ----    直接获取MybatisPlus封装的CRUD的方法实现
+> - UserService接口    ----    继承IService<User>接口    ----    定义了一系列 CRUD 操作的规范，但并没有提供具体的实现
+> - UserServiceImpl实现类    
+>   - ----    实现UserService接口    ----    只是规则上的约束，无实际意义
+>   - ----    继承ServiceImpl<Usermapper,User>实现类    ----    获得具体的CRUD方法实现
+>     - ServiceImpl 是 IService 的具体实现类
+
+
+
+> - 实体类
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+//捆绑表
+@TableName("tb_user")
+public class User {
+    //id自增
+    @TableId(type = IdType.AUTO)
+    Long id ;
+    //绑定字段
+    @TableField("user_name")
+    String userName;
+    String password;
+    String name;
+    Integer age;
+    String email;
+}
+```
+
+
+
+> - mapper接口
+
+```java
+@Mapper
+public interface Usermapper extends BaseMapper<User>{
+
+}
+```
+
+
+
+> - service接口
+
+```java
+@Service
+public interface UserService extends IService<User>{
+}
+
+```
+
+
+
+> - service实现类
+
+```java
+public class UserServiceImpl extends ServiceImpl<Usermapper,User> implements UserService{
+    @Autowired
+    private Usermapper usermapper;
+
+    public User getUser(Integer id){
+
+        //service层的CRUD
+        User byId = getById(id);
+        //Mapper层的CRUD
+        User user = usermapper.selectById(id);
+
+        return user;
+    }
+
+}
+```
 
 
 
