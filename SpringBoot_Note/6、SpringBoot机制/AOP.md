@@ -23,6 +23,40 @@
 
 
 
+## AOP本质
+
+> ### 狸猫换太子
+>
+> - 当Spring AOP 在初始化 IoC 容器并处理 Bean 时，它会扫描配置的 Bean，检查它们是否具有切面注解。
+> - 如果发现目标 Bean 应用的切面，AOP 会在创建目标 Bean 的过程中动态生成代理对象，它会用代理对象替换原始 Bean
+> - 这是通过 Spring 的 IoC 容器实现的，确保所有对 Bean 的调用都是通过代理对象进行的。
+> - 这个代理对象会拦截对目标方法的调用。
+> - 这样，当我们在业务逻辑中使用注入的 Bean 时，实际上获得的是一个代理实例，而不是原始的目标对象。
+> - 尽管在业务代码中直接使用目标对象而不是代理对象调用目标方法，但在运行时，调用实际上是通过代理对象实现的。
+>
+> ### 针对方法
+>
+> - AOP 的核心功能在于横切关注点（如日志、事务等）的处理，而动态代理提供了实现这些功能的基础。
+> - 代理对象在调用目标方法前后执行切面逻辑，使得业务逻辑与横切关注点分离，从而提高了代码的可维护性和清晰度。
+> - 可以理解为，AOP 就像在动态代理的“头上”加了“沙子”，这些“沙子”是切面逻辑。
+> - 切点（Pointcut）是 AOP 的重要概念，用于定义在哪些方法上应用切面逻辑。
+> - 在 Spring AOP 中，切点通常通过表达式指定，如通过注解或方法名来选择目标方法。
+> - 这意味着 AOP 的功能主要是针对方法的，而不是类本身。
+
+
+
+## AOP 的优点
+
+> - 代码无入侵
+>   - 不修改的情况下进行   功能增强
+> - 集中式管理横切关注点：
+>   - 所有横切关注点可以集中在一个地方管理，修改时不需要遍历每个类。
+> - 更少的代码重复
+>   - 每个类都需要实现相同的接口方法，导致代码重复，维护困难。
+>   - AOP 则可以通过定义切面（Aspect）来统一处理，这样所有相关的类都可以通过切入点（Pointcut）共享相同的功能，避免了代码重复。
+
+
+
 ## AOP术语
 
 ![1727170739220](AOP.assets/1727170739220.png)
@@ -31,76 +65,54 @@
 
 > - **Join Point** -- 连接点 --  where  -- 可以放沙子的点，
 >
->   - 连接点**是指程序中　**所有可能被 AOP 拦截的点
+>   - 连接点**是指程序中　**所有可能被 AOP 拦截的点，也就是所有调用目标方法的位置
 >
->     
->
-> - **Point Cut** -- 切点  --  是一个表达式，用于匹配特定的连接点，**是对连接点的定义或过滤**
+>    - **Point Cut** -- 切点  --  是一个表达式，用于匹配特定的连接点，**是对连接点的定义或过滤**
 >
 >   - **简单来说，**切点用于选择谁是连接点
->     - **execution(\* com.example.service.\*.get\*(..))**：表示匹配 `com.example.service` 包中所有以 `get` 开头的方法。
+>    - **execution(\* com.example.service.\*.get\*(..))**：表示匹配 `com.example.service` 包中所有以 `get` 开头的方法。
 >   - **@annotation(MyAnnotation)**：匹配带有 `MyAnnotation` 注解的方法。
->   
+> 
 >   - 特点：
->   - 切点是一种**规则**，**用于选择连接点。**
+>     - 切点是一种**规则**，**用于选择连接点。**
 >     - 切点定义了在哪些地方应用横切逻辑
->   
+> 
 > - **切入点表达式**：定位切入点方法的表达式
->
+>   
 >   - 匹配定义在哪些方法上应用切面
->     
->     - @Pointcut("execution(public * com.example.service.*.*(..))")
->   - 匹配带有特定注解的方法
->     
->     - @Pointcut("@annotation(com.example.annotation.Loggable)")
->   - 匹配指定类或包中的所有方法
->     
->     - @Pointcut("within(com.example.service.*)")
->   - 匹配代理对象或目标对象的特定类型的方法
->     - @Pointcut("this(com.example.service.UserService)"
->     
->     - @Pointcut("target(com.example.service.UserService)")
->     
->       
 >
-> - **Advice**  -- 通知/增强（重复的逻辑，共性的功能）-- 沙子
+>     - @Pointcut("execution(public * com.example.service.*.*(..))")
+>      - 匹配带有特定注解的方法
+> 
+>     - @Pointcut("@annotation(com.example.annotation.Loggable)")
+>      - 匹配指定类或包中的所有方法
+> 
+>     - @Pointcut("within(com.example.service.*)")
+>      - 匹配代理对象或目标对象的特定类型的方法
+>     - @Pointcut("this(com.example.service.UserService)"
+> 
+>     - @Pointcut("target(com.example.service.UserService)")
+>    
+>    
+>    
+>    - **Advice**  -- 通知/增强（重复的逻辑，共性的功能）-- 沙子
 >
 >   - do what -- 点的功能
->   - when -- 点的前后
+>  - when -- 点的前后
 >   - 5种通知方式
 >     - @Before
 >     - @After
 >     - @Around 
 >     - @AfterThrowing
 >     - @AfterReturning
->
+> 
 > - **Aspect**  --  **切面 = 切入点＋通知**　－＞　where + when + do what
 >
->   
+> 
 >
-> - **Target** -- 目标对象：切入点所归属的对象，也就要掺沙子的地方
+>   - **Target** -- 目标对象：切入点所归属的对象，也就要掺沙子的地方
 >
 > - **proxy** -- 代理对象：框架创建的proxy对象，执行切面相关方法
-
-
-
-## AOP本质
-
-> - SpringBoot 在创建Bean对象的时候不是直接把Bean对象注入到我们使用的地方，注入的是一个动态代理
-> - 借此动态代理的机制来实现AOP的功能，将沙子掺在动态代理的头上
-> - 也因此，AOP的切点主要是在方法上面
-
-
-
-## 应用场景
-
-> - 权限控制
-> - 缓存控制
-> - 审计日志
-> - 异常处理
-> - 分布式追踪
-> - 数据持久化
-> - 事务处理
 
 
 
@@ -108,11 +120,10 @@
 
 
 
-### 连接点
+### 确定连接点
 
 > - 连接点 
->   - 调用adduser方法的地方
->   -  public void addUser(){}
+>   -  addUser( ) 方法
 
 ```java
 public class UserService {
@@ -137,15 +148,15 @@ public class UserService {
 
 ### **定义切面**：
 
-> - 创建一个切面类，使用 @Aspect 注解标识，包含切入点和通知。
+> - 创建一个切面类，使用 @Aspect 注解标识，包含 切点 和 通知。
+> - @Component
 
 > - 切点： 
 >   - @Pointcut("execution(* UserService.addUser(..))")
->   -  public void userAddPointcut( ) { }
 
-> - 切面：
->   - @Aspect
->   - public class LoggingAspect ( ){ }
+> - 通知
+>   -  @Before("userAddPointcut( )")
+>   - @After("userAddPointcut( )")
 
 ```java
 @Aspect
@@ -168,20 +179,20 @@ public class LoggingAspect {
 
 
 
-### **定义切入点**：
+### **切点**：
 
-> - 使用 @Pointcut 注解定义切入点，指定在哪些连接点（如方法调用）上应用切面。
+> - 使用 **@Pointcut** 注解定义切入点，指定在哪些连接点（如方法调用）上应用切面。
 
 ```java
-@Pointcut("execution(* UserService.addUser(..))")
+@Pointcut("execution(* UserService.addUser(..))")// 切点定义
 public void userAddPointcut() {
-    // 切点定义
+    
 }
 ```
 
 
 
-### **定义通知**：
+### **通知**：
 
 > - 使用 @Before、@After、@Around 等注解定义通知，指定在切入点前后或环绕执行的逻辑。
 
@@ -199,9 +210,11 @@ public void userAddPointcut() {
 
 
 
-### **配置 AOP**：
+### **配置 AOP**
 
-> - 在 Spring 配置中启用 AOP，可以在主类上添加 **@EnableAspectJAutoProxy** 注解，或在 XML 配置中进行相应设置。
+> - 在 Spring 配置中启用 AOP
+>   - 在主类上添加 **@EnableAspectJAutoProxy** 注解
+>   - 或在 XML 配置中进行相应设置。
 
 
 
@@ -241,7 +254,7 @@ public class TimeCountAspect {
 
 ![1726280641096](AOP.assets/1726280641096.png)
 
-> - @Around 最强大,手动控制对象的执行位置也就是可以实现下边的所有
+> - @Around 最强大，手动控制对象的执行位置
 
 
 
@@ -249,19 +262,19 @@ public class TimeCountAspect {
 
 > - **获取方法执行时的相关信息**
 >
->   - @Around只能用 ProceedingJoinPoint
+>   - @Around只能用 **ProceedingJoinPoint**（JoinPoint的子类）
 >
 >     - ProceedingJoinPoint  **允许你手动控制目标方法的执行**
 >
->     - 所以你可以选择是否调用目标方法
+>     - 因此你需要需要手动配置是否调用目标方法
 >
->     - **proceedingJoinPoint.proceed();**
+>       - **proceedingJoinPoint.proceed( );**  **--  激活**
 >
 >       
 >
->   - 其他四种只能用 JoinPoint（是ProceedingJoinPoint的父类型）
+>   - 其他四种只能用 JoinPoint（是ProceedingJoinPoint的父类）
 >
->     - `JoinPoint` 自动传递当前执行的方法的信息，不需要额外的激活步骤
+>     - `JoinPoint` 自动传递当前执行的方法的信息，**不需要额外的激活步骤**
 
 
 
@@ -320,7 +333,7 @@ public class Demo1 {
 
 
 
-## AOP切点入表达式
+## AOP切点表达式
 
 
 
@@ -390,7 +403,7 @@ public class LoggingAspect {
     @Pointcut("@annotation(logExecution)") // 拦截带有 @LogExecution 注解的方法
     public void logPointcut(LogExecution logExecution) {}
 
-    @Around("logPointcut(logExecution)") // 在切点执行前后执行通知
+    @Around("logPointcut(logExecution)") 
     public Object logAround(ProceedingJoinPoint joinPoint, LogExecution logExecution) throws Throwable {
         System.out.println("开始执行方法: " + joinPoint.getSignature().getName() + " - 描述: " + logExecution.value());
         
@@ -404,25 +417,37 @@ public class LoggingAspect {
 
 
 
-### 抽取公共的切入点表达式
-
-![1726287255409](AOP.assets/1726287255409.png)
-
-
-
-![1726287284747](AOP.assets/1726287284747.png)
-
 ## 最终版
 
 > - 运用逻辑条件缩小范围，精确定位
+>
+> - @annotation注解的参数是目标注解的类型
+>
+>   - 如果 `MyCustomAnnotation` 在不同的包中，则需要在切入点表达式中提供完整的包名
+>
+>     ![1726297619654](AOP.assets/1726297619654.png)
+>
+>   - 同一包中或者导入了相应的包，只需要注解的类型名
+>
+>     ![1727369688490](AOP.assets/1727369688490.png)
 
-![1726297619654](AOP.assets/1726297619654.png)
 
 
 
 
+## 应用场景
 
-## Java是OOP的，为什么会选用AOP来实现切面？
+> - 权限控制
+> - 缓存控制
+> - 审计日志
+> - 异常处理
+> - 分布式追踪
+> - 数据持久化
+> - 事务处理
+
+
+
+## Java是OOP的，为什么选用AOP来实现切面？
 
 > AOP（面向切面编程，Aspect-Oriented Programming）和 OOP（面向对象编程，Object-Oriented Programming）实际上是互补的编程范式．AOP 并没有取代 OOP 的概念，而是为了解决 OOP **难以处理的一些横切关注点问题**
 >
@@ -431,32 +456,3 @@ public class LoggingAspect {
 >   - 横切关注点指的是那些跨越多个模块、类或方法的功能需求，例如日志记录、事务管理、安全检查等。这些需求往往  **不属于系统的核心业务逻辑，而是“辅助”功能。**
 >   - 横切关注点通常会影响多个类、模块和方法，而这些类和方法之间的关联可能并不明显
 >
-> **为什么不使用接口?**
->
-> - 接口局限性
->   - **增加类的复杂度**：
->     - 如果使用接口来处理这些横切关注点，就需要将这些接口和逻辑明确地添加到每个相关的类中。
->     - 这样做虽然表面上可以解决问题，但每个类都需要实现这些接口，导致类的职责变得不单一，违背了“单一职责原则”，耦合度增加。
-> - AOP 的优势：                                                     
->   - 代码无入侵
->     - 不修改的情况下进行   功能增强
->   - 集中式管理横切关注点：
->     - 所有横切关注点可以集中在一个地方管理，修改时不需要遍历每个类。
->   - 更少的代码重复
->   - 每个类都需要实现相同的接口方法，导致代码重复，维护困难。
->   - AOP 则可以通过定义切面（Aspect）来统一处理，这样所有相关的类都可以通过切入点（Pointcut）共享相同的功能，避免了代码重复。
-
-
-
-## AOP比注解更偏底层一点吗?
-
-> 是的，从设计层次上看，AOP（面向切面编程）确实可以被认为比注解更“底层”一些，主要体现在以下几个方面：
->
-> - **AOP 是实现增强的机制**：
->   - AOP 本身是一种用于定义和实现横切关注点的编程方式，它通过切面（Aspect）、切入点（Pointcut）、通知（Advice）等机制，在运行时或编译时对目标方法进行增强。
->   - AOP 可以通过字节码操作、代理模式等底层技术来拦截方法调用并执行增强逻辑。
-> - **注解是标记而非增强逻辑本身**
->   - 它用来标记代码中的增强点 , 注解本质上是一种元数据，用来为代码元素（如类、方法、字段）提供额外的信息。
->   - 注解本身不包含增强逻辑，它通常是声明性地告诉系统在哪里应该应用某种增强行为。底层的增强逻辑依赖于 AOP 或其他机制来实现。
->
-> 
