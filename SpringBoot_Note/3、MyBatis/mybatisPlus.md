@@ -196,7 +196,7 @@ mybatis-plus:
 
 ![1726820443156](mybatisPlus.assets/1726820443156.png)
 
-```
+```java
  Map map = new HashMap();
         map.put("id", 7);
         map.put("password", "88888");
@@ -278,10 +278,10 @@ mybatis-plus:
 > -  配置逻辑删除
 >
 > - ```yml
-> #所有的实体类
-> mybatis-plus:
-> global-config:
-> db-config:
+>   #所有的实体类
+>   mybatis-plus:
+>   global-config:
+>   db-config:
 >   #:前缀
 >   table-prefix: tb_
 >   #:主键自增
@@ -291,20 +291,19 @@ mybatis-plus:
 >   logic-delete-value: 1
 >   logic-not-delete-value: 0
 >   ```
->
+> ```
 > 
->
 > 
->
+> 
+> 
+> 
+> 
+> 
 > - 本质走的是更新操作，并不是删除
 > - ![1727096848359](mybatisPlus.assets/1727096848359.png)
-> ```
+> 
 > 
 > ```
-
-
-
-
 
 
 
@@ -388,12 +387,6 @@ public enum IdType {
 
 
 
-## 性能分析插件
-
-> - 
-
-
-
 ## 条件构造器 -- Wrapper
 
 ![1726824718705](mybatisPlus.assets/1726824718705.png)
@@ -458,6 +451,67 @@ LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<>();
 ### 子查询
 
 > - 
+
+
+
+## 分页查询
+
+> - MyBatis-Plus 提供的一个用于 **分页查询** 的接口方法 selectPage
+
+> - `selectPage` 是用来执行分页查询的，它结合分页对象（`Page` 类）和条件构造器（如 `QueryWrapper`、`LambdaQueryWrapper`）来实现数据库的分页查询
+> - 通过 `selectPage`，你可以获取到：
+>   - 当前页的数据记录。
+>   - 总记录数。
+>   - 总页数。
+>   - 每页的数据量。
+>   - 当前页码等分页信息。
+
+```java
+   void wrapperSelectPage() {
+       
+       //创建查询对象
+        int pageNum = 1;/*第一页*/
+        int pageSize = 2;/*每页数量*/
+        Page<User> page = new Page<>(pageNum, pageSize);
+       
+       //条件构造器
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.like("name", "李")/*全模糊*/
+				 //.orderBy(true,true,"age");/*条件,顺序顺序,排序字段*/
+                .orderByAsc("age")
+                .select("name");
+       
+       //分页查询
+        usermapper.selectPage(page, wrapper);
+       
+       //获取结果
+        long pages = page.getPages();
+        long total = page.getTotal();
+        List<User> records = page.getRecords();
+    }
+```
+
+
+
+### 分页拦截器
+
+> - 在启动类中直接配置也行,一样,但不推荐
+> - **方法本身不执行任何查询操作，它只是在 `ThreadLocal` 中保存分页信息，并通过拦截器机制，在接下来的查询执行时，自动在 SQL 中加入 `LIMIT` 和 `OFFSET` 分句。**
+
+```java
+@Configuration
+public class MybatisPlusConfig {
+
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        // 创建Mybatis-Plus分页拦截器
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        // 添加分页拦截器
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        return interceptor;
+    }
+}
+```
 
 
 

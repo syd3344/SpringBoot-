@@ -3,9 +3,27 @@
 > - 主要用于从数据库中查询数据。
 > - **DQL** 虽然经常被单独提出来，但它实质上是 DML 的一个子集，专注于 **数据查询**。
 
+
+
+## Select
+
+> - SQL 查询的 `SELECT` 操作确实是 ==**以列为单位**== 进行数据的提取。
+> - 每个 `SELECT` 查询都从数据库的表中选择特定的列或多列，然后根据条件提取相应的行
+>   - **列为单位**：
+>     - `SELECT` 指定要从表中返回的列，这些列可以是表中的原始列，也可以是基于这些列进行计算或处理后的结果。你可以通过列名、别名或者表达式进行选择。
+>   - **行和列的关系**：
+>     - **==按行处理==**
+>       - 当查询执行时，SQL 会根据 `FROM` 子句中的表，按行处理数据。
+>     - **==按列返回==**
+>       - 但最终输出的数据单位是按列排列的，即每一行会包含在 `SELECT` 中指定的各个列的值。
+>       - 每一行会包含在 `SELECT` 中指定的各个列的值
+>       - 这种设计有助于**提高查询效率**，特别是只选择特定列的数据量较小时，==**避免了不必要的数据读取和传输**==
+
+
+
 ## Select语句基本结构
 
-```
+```sql
 SELECT column1, column2, ...
 FROM table_name
 [WHERE condition]
@@ -14,6 +32,8 @@ FROM table_name
 [ORDER BY column [ASC|DESC]]
 [LIMIT number];
 ```
+
+
 
 ## 单表查询
 
@@ -24,20 +44,20 @@ SELECT *
 FROM employees;
 ```
 
-```
+```sql
 SELECT name, salary 
 FROM employees;
 ```
 
 ### 条件查询 - - where
 
-```
+```sql
 SELECT name, salary 
 FROM employees
 WHERE salary > 50000;
 ```
 
-```
+```sql
 SELECT name, position, salary 
 FROM employees
 WHERE position = 'Manager' AND salary > 70000;
@@ -45,7 +65,7 @@ WHERE position = 'Manager' AND salary > 70000;
 
 ### 排序查询 - - ORDER BY
 
-```
+```sql
 SELECT name, salary 
 FROM employees
 ORDER BY salary DESC;
@@ -60,7 +80,7 @@ ORDER BY salary DESC;
 > - 按照GROUP BY 后的字段分组，字段属性名作为 分组的组名
 > - **分组后返回的字段    一般为 聚合类函数 或 分组字段**
 
-```
+```sql
 SELECT department, AVG(salary) AS avg_salary
 FROM employees
 GROUP BY department;
@@ -71,7 +91,7 @@ GROUP BY department;
 > - `HAVING` 子句用于对 `GROUP BY` 分组后的结果进行过滤。
 > - 与 `WHERE` 类似，但 `HAVING` 是在分组之后进行过滤的，而 `WHERE` 是在分组之前进行过滤的。
 
-```
+```sql
 SELECT department, AVG(salary) AS avg_salary
 FROM employees
 GROUP BY department
@@ -104,7 +124,7 @@ HAVING AVG(salary) > 60000;
 
 > - 可以根据多个列进行分组，这样可以创建更  **细粒度**  的分组。
 
-```
+```sql
 SELECT department, position, COUNT(*) AS employee_count
 FROM employees
 GROUP BY department, position;
@@ -125,7 +145,7 @@ GROUP BY department, position;
 
 > - 查询语句如下
 
-```
+```sql
 SELECT gender, dept_id, COUNT(*) AS count
 FROM employees
 GROUP BY gender, dept_id;
@@ -157,8 +177,8 @@ GROUP BY gender, dept_id;
 
 > - 查询语句如下
 
-```
-sql复制代码SELECT department, position, COUNT(*) AS employee_count
+```sql
+SELECT department, position, COUNT(*) AS employee_count
 FROM employees
 GROUP BY department, position;
 ```
@@ -182,7 +202,7 @@ GROUP BY department, position;
 
 > - 可以在分组查询中使用 `ORDER BY` 对分组结果进行排序。
 
-```
+```sql
 ELECT department, 
        SUM(salary) AS total_salary
 FROM employees
@@ -205,20 +225,23 @@ ORDER BY total_salary DESC;
 > - 左外连接
 
 ```
-select * from tb_emp a left join tb_dept td on a.dept_id = td.id;
+select * from tb_emp a 
+left join tb_dept td 
+on a.dept_id = td.id;
 ```
 
 > - 连接查询 —— 缺啥连啥，连上了在筛选 —— 最暴力
 
-```
-select e.* from tb_emp e ,tb_dept b where e.dept_id=b.id and b.id=2;
+```sql
+select e.* from tb_emp e ,tb_dept b 
+where e.dept_id=b.id and b.id=2;
 ```
 
 #### 子查询
 
 > - 子查询（嵌套查询）—— 先一步到位，将无法查询的定义为子sql
 
-```
+```sql
 -- 一步到位
 select * from tb_emp where dept_id = 2;
 
@@ -233,7 +256,7 @@ select * from tb_emp where dept_id =(select id from tb_dept where name ='教研�
 
 ## 多表关系
 
-> - 创建唯一关系 --- 外键
+> - 创建唯一关系 -- 外键
 
 ### 一对多
 
@@ -261,7 +284,7 @@ select * from tb_emp where dept_id =(select id from tb_dept where name ='教研�
 
 ### 双值if匹配
 
-```
+```sql
 select if(gender=1,'男','女' )性别  ,count(*) 数量
 from tb_emp
 group by gender;
@@ -269,7 +292,7 @@ group by gender;
 
 ### 多值case匹配
 
-```
+```sql
 select case job
     when 1 then'讲师'
     when 2 then'班主任'

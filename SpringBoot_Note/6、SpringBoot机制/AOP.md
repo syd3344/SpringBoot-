@@ -78,26 +78,25 @@
 >     - 切点定义了在哪些地方应用横切逻辑
 > 
 > - **切入点表达式**：定位切入点方法的表达式
->   
 >   - 匹配定义在哪些方法上应用切面
->
->     - @Pointcut("execution(public * com.example.service.*.*(..))")
+>   
+>  - @Pointcut("execution(public * com.example.service.*.*(..))")
 >      - 匹配带有特定注解的方法
-> 
->     - @Pointcut("@annotation(com.example.annotation.Loggable)")
+>   
+>   - @Pointcut("@annotation(com.example.annotation.Loggable)")
 >      - 匹配指定类或包中的所有方法
-> 
->     - @Pointcut("within(com.example.service.*)")
+>   
+>   - @Pointcut("within(com.example.service.*)")
 >      - 匹配代理对象或目标对象的特定类型的方法
 >     - @Pointcut("this(com.example.service.UserService)"
+>   
+>   - @Pointcut("target(com.example.service.UserService)")
 > 
->     - @Pointcut("target(com.example.service.UserService)")
 >    
 >    
->    
->    - **Advice**  -- 通知/增强（重复的逻辑，共性的功能）-- 沙子
->
->   - do what -- 点的功能
+>       - **Advice**  -- 通知/增强（重复的逻辑，共性的功能）-- 沙子
+> 
+>  - do what -- 点的功能
 >  - when -- 点的前后
 >   - 5种通知方式
 >     - @Before
@@ -107,12 +106,12 @@
 >     - @AfterReturning
 > 
 > - **Aspect**  --  **切面 = 切入点＋通知**　－＞　where + when + do what
->
 > 
 >
->   - **Target** -- 目标对象：切入点所归属的对象，也就要掺沙子的地方
->
-> - **proxy** -- 代理对象：框架创建的proxy对象，执行切面相关方法
+> 
+>  - **Target** -- 目标对象：切入点所归属的对象，也就要掺沙子的地方
+> 
+>- **proxy** -- 代理对象：框架创建的proxy对象，执行切面相关方法
 
 
 

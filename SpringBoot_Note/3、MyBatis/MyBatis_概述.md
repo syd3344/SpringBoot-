@@ -2,10 +2,11 @@
 
 > - MyBatis 是一款简化JDBC操作的持久层框架，它简化了 Java 对数据库的访问过程，提供了灵活的 SQL 映射功能。
 >
-> - 与全自动的 ORM 框架不同，MyBatis 允许开发者直接编写 SQL 语句，同时通过映射配置或者注解将 SQL 与 Java 对象进行绑定，具有高效、灵活的特点。
->   - ORM（Object-Relational Mapping 对象关系映射）
+> - MyBatis 允许开发者直接编写 SQL 语句，同时通过映射配置或者注解  **将 SQL 与 Java 对象进行绑定**，具有高效、灵活的特点。
 >   - 是一种用于将面向对象编程语言中的对象与关系数据库中的表进行 **自动映射** 的技术
 >   - 它通过将数据库中的表、行、列与编程语言中的类、对象和属性进行对应，实现对象与数据库的无缝交互，从而简化数据的持久化操作。
+
+
 
 ## 特点
 
@@ -28,6 +29,25 @@
 >
 > - **注解**：通过注解直接在 Mapper 接口中编写 SQL，适合简单的查询。
 
+### 错误案例
+
+```mysql
+/*增加取消记录*/
+void addCancelCount(@Param("userId") int userId, @Param("createTime") LocalDateTime createTime);
+```
+
+```mysql
+ <!--新增-->
+    <insert id="addReservationCount" >
+         insert into reservation (name, mobile, time, visitor, type, status,create_time,remark)
+         values (#{name},#{mobile},#{time},#{visitor},#{type},#{status},#{createTime},#{remark})
+    </insert>
+```
+
+> 此时的插入语句报错，mybatis的所有插入语句必须是对象
+
+
+
 ## 核心组件
 
 > #### **SqlSession**：
@@ -48,6 +68,8 @@
 > #### **动态 SQL**：
 >
 > - MyBatis 支持动态 SQL，通过 XML 配置文件中的 `if`、`choose`、`foreach` 等元素，开发者可以根据不同的条件动态生成 SQL 语句，这极大提高了 SQL 的灵活性。
+
+
 
 ## 工作流程
 

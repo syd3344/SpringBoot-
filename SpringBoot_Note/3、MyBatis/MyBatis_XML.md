@@ -1,4 +1,4 @@
-## xml配置
+## 类关联
 
 > - 确保在 mybatis-config.xml 文件中已经正确配置了映射文件（Mapper 文件）。
 
@@ -13,6 +13,10 @@
 //namespace后边跟的是绑定持久层的包路径+类名
 <mapper namespace="com.example.tlias_11.dao.EmpDao" >
 ```
+
+
+
+## 方法关联
 
 > - id绑定方法名，resultType后跟返回参数类型
 
@@ -39,6 +43,6 @@
 
 > - Dao层被xml捆绑的sql方法
 
-```
+```Java
 List<Emp> selectAll();
 ```

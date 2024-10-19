@@ -31,12 +31,15 @@
 
 
 
-
-
 > - 核心配置信息
 >   - 服务器地址：endpoint
 >   - 身份标识：accessKeyID + accessKey Secret
 >   - BucketName
+
+
+
+> - https://tlias-system-heima.https://oss-cn-beijing.aliyuncs.com/5030a366-9e49-41bf-ae55-5d86afbde6c8.jpeg
+> - https://itheim.oss-cn-beijing.aliyuncs.com/32287133-a276-411a-91f7-5acb62ada2e3.png
 
 
 
@@ -105,7 +108,7 @@ public class ALiOssUtils {
    // private String endpoint = "";
    // private String accessKeyId = "";
    // private String accessKeySecret = "";
-  //  private String bucketName = "";
+   // private String bucketName = "";
 
     /**
      * 实现上传图片到OSS
